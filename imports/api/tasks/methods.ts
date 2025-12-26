@@ -13,15 +13,9 @@
 
 import { Meteor } from 'meteor/meteor';
 import { check, Match } from 'meteor/check';
-import {
-  TasksCollection,
-  ProjectsCollection,
-  ActivityLogsCollection,
-  Task,
-  NewTask,
-  TaskStatus,
-  Priority,
-} from '../collections';
+import { TasksCollection, Task, NewTask, TaskStatus, Priority } from './index';
+import { ProjectsCollection } from '../projects';
+import { ActivityLogsCollection } from '../activityLogs';
 
 // ============================================================================
 // HELPER FUNCTIONS

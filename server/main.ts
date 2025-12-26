@@ -23,16 +23,19 @@ import { Meteor } from 'meteor/meteor';
 // 1. IMPORT COLLECTIONS
 // ============================================================================
 // WHY: This creates the collection instances and sets up indexes
-// The collections.ts file has server-side code that runs on import
-import '/imports/api/collections';
+// Each domain's collection file has server-side code that runs on import
+import '/imports/api/users/collection';
+import '/imports/api/projects/collection';
+import '/imports/api/tasks/collection';
+import '/imports/api/activityLogs/collection';
 
 // ============================================================================
 // 2. IMPORT METHODS
 // ============================================================================
 // WHY: Registers Meteor.methods() for client-server communication
 // Methods handle all write operations (CRUD)
-import '/imports/api/methods/projects.methods';
-import '/imports/api/methods/tasks.methods';
+import '/imports/api/projects/methods';
+import '/imports/api/tasks/methods';
 
 // ============================================================================
 // 3. IMPORT PUBLICATIONS

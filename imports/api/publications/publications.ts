@@ -31,12 +31,10 @@
 
 import { Meteor } from 'meteor/meteor';
 import { check, Match } from 'meteor/check';
-import {
-  ProjectsCollection,
-  TasksCollection,
-  ActivityLogsCollection,
-  UsersCollection,
-} from '../collections';
+import { ProjectsCollection } from '../projects';
+import { TasksCollection } from '../tasks';
+import { ActivityLogsCollection } from '../activityLogs';
+import { UsersCollection } from '../users';
 
 // ============================================================================
 // PUBLICATIONS ONLY RUN ON SERVER

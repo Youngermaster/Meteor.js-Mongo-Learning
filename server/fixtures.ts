@@ -18,15 +18,10 @@
 
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
-import {
-  ProjectsCollection,
-  TasksCollection,
-  ActivityLogsCollection,
-  UserRole,
-  ProjectStatus,
-  TaskStatus,
-  Priority,
-} from '/imports/api/collections';
+import { ProjectsCollection, ProjectStatus, Priority } from '/imports/api/projects';
+import { TasksCollection, TaskStatus } from '/imports/api/tasks';
+import { ActivityLogsCollection } from '/imports/api/activityLogs';
+import type { UserRole } from '/imports/api/users';
 
 /**
  * Create sample users with properly hashed passwords

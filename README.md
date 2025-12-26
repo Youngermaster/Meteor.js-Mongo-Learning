@@ -19,12 +19,13 @@ This project is designed to teach you:
 
 ---
 
-## 📚 Project Structure
+## 📚 Project Structure (Feature-Based Architecture)
 
 ```
 meteorjs-learning/
 ├── CASE_STUDY.md              # Detailed case study and learning objectives
 ├── DDP_OPTIMIZATION_GUIDE.md  # DDP performance best practices
+├── REFACTORING_GUIDE.md       # Feature-based architecture explanation
 ├── README.md                  # This file
 │
 ├── docker-compose.yml         # MongoDB + Mongo Express setup
@@ -33,20 +34,33 @@ meteorjs-learning/
 │
 ├── imports/
 │   └── api/
-│       ├── collections/       # TypeScript collection schemas
-│       │   ├── collections.ts # Collection instances & indexes
-│       │   ├── types.ts       # TypeScript interfaces
+│       ├── users/             # User domain
+│       │   ├── types.ts       # User types
+│       │   ├── collection.ts  # Users collection + indexes + security
 │       │   └── index.ts       # Barrel export
 │       │
-│       ├── methods/           # Meteor Methods (CRUD operations)
-│       │   ├── projects.methods.ts
-│       │   └── tasks.methods.ts
+│       ├── projects/          # Project domain
+│       │   ├── types.ts       # Project types
+│       │   ├── collection.ts  # Projects collection + indexes + security
+│       │   ├── methods.ts     # Project CRUD methods
+│       │   └── index.ts       # Barrel export
 │       │
-│       ├── publications/      # DDP Publications
-│       │   └── publications.ts
+│       ├── tasks/             # Task domain
+│       │   ├── types.ts       # Task types
+│       │   ├── collection.ts  # Tasks collection + indexes + security
+│       │   ├── methods.ts     # Task CRUD methods
+│       │   └── index.ts       # Barrel export
 │       │
-│       └── aggregations/      # MongoDB Aggregations
-│           └── aggregations.ts
+│       ├── activityLogs/      # Activity log domain
+│       │   ├── types.ts       # Activity log types
+│       │   ├── collection.ts  # ActivityLogs collection + indexes + security
+│       │   └── index.ts       # Barrel export
+│       │
+│       ├── aggregations/      # MongoDB Aggregations
+│       │   └── aggregations.ts
+│       │
+│       └── publications/      # DDP Publications
+│           └── publications.ts
 │
 ├── server/
 │   ├── main.ts               # Server entry point
@@ -58,6 +72,8 @@ meteorjs-learning/
 ├── package.json              # Dependencies
 └── tsconfig.json             # TypeScript configuration
 ```
+
+**Note:** This project follows a **feature-based (domain-driven)** architecture for better maintainability and scalability. See [REFACTORING_GUIDE.md](./REFACTORING_GUIDE.md) for details.
 
 ---
 

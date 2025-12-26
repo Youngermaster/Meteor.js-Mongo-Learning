@@ -34,12 +34,10 @@
 
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import {
-  TasksCollection,
-  ProjectsCollection,
-  ActivityLogsCollection,
-  UsersCollection,
-} from '../collections';
+import { TasksCollection } from '../tasks';
+import { ProjectsCollection } from '../projects';
+import { ActivityLogsCollection } from '../activityLogs';
+import { UsersCollection } from '../users';
 
 // ============================================================================
 // AGGREGATION HELPER FUNCTIONS
