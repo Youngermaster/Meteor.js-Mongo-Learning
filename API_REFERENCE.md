@@ -11,6 +11,7 @@ Methods are used for all write operations (Create, Update, Delete) and for fetch
 ### Projects Methods
 
 #### `projects.insert`
+
 Create a new project.
 
 ```typescript
@@ -31,6 +32,7 @@ Meteor.call('projects.insert', {
 ---
 
 #### `projects.update`
+
 Update an existing project.
 
 ```typescript
@@ -51,15 +53,17 @@ Meteor.call('projects.update', projectId, {
 ---
 
 #### `projects.remove`
+
 Delete or archive a project.
 
 ```typescript
-Meteor.call('projects.remove', projectId, hardDelete, (error) => {
+Meteor.call("projects.remove", projectId, hardDelete, (error) => {
   // Handle response
 });
 ```
 
 **Parameters:**
+
 - `projectId` (string): Project to delete
 - `hardDelete` (boolean): If true, permanently delete. If false, archive.
 
@@ -68,10 +72,11 @@ Meteor.call('projects.remove', projectId, hardDelete, (error) => {
 ---
 
 #### `projects.addTeamMember`
+
 Add a user to project team.
 
 ```typescript
-Meteor.call('projects.addTeamMember', projectId, userId, (error) => {
+Meteor.call("projects.addTeamMember", projectId, userId, (error) => {
   // Handle response
 });
 ```
@@ -81,10 +86,11 @@ Meteor.call('projects.addTeamMember', projectId, userId, (error) => {
 ---
 
 #### `projects.removeTeamMember`
+
 Remove a user from project team.
 
 ```typescript
-Meteor.call('projects.removeTeamMember', projectId, userId, (error) => {
+Meteor.call("projects.removeTeamMember", projectId, userId, (error) => {
   // Handle response
 });
 ```
@@ -96,6 +102,7 @@ Meteor.call('projects.removeTeamMember', projectId, userId, (error) => {
 ### Tasks Methods
 
 #### `tasks.insert`
+
 Create a new task.
 
 ```typescript
@@ -119,6 +126,7 @@ Meteor.call('tasks.insert', {
 ---
 
 #### `tasks.update`
+
 Update an existing task.
 
 ```typescript
@@ -142,10 +150,11 @@ Meteor.call('tasks.update', taskId, {
 ---
 
 #### `tasks.remove`
+
 Delete a task.
 
 ```typescript
-Meteor.call('tasks.remove', taskId, (error) => {
+Meteor.call("tasks.remove", taskId, (error) => {
   // Handle response
 });
 ```
@@ -155,15 +164,17 @@ Meteor.call('tasks.remove', taskId, (error) => {
 ---
 
 #### `tasks.assign`
+
 Assign or reassign a task.
 
 ```typescript
-Meteor.call('tasks.assign', taskId, userId, (error) => {
+Meteor.call("tasks.assign", taskId, userId, (error) => {
   // Handle response
 });
 ```
 
 **Parameters:**
+
 - `userId` (string | null): User to assign to, or null to unassign
 
 **Requires:** Login, Project owner or Admin
@@ -171,10 +182,11 @@ Meteor.call('tasks.assign', taskId, userId, (error) => {
 ---
 
 #### `tasks.logTime`
+
 Log time spent on a task.
 
 ```typescript
-Meteor.call('tasks.logTime', taskId, hoursToAdd, (error) => {
+Meteor.call("tasks.logTime", taskId, hoursToAdd, (error) => {
   // Handle response
 });
 ```
@@ -186,10 +198,11 @@ Meteor.call('tasks.logTime', taskId, hoursToAdd, (error) => {
 ### Aggregation Methods
 
 #### `aggregations.getUserStatistics`
+
 Get statistics for current user.
 
 ```typescript
-Meteor.call('aggregations.getUserStatistics', (error, result) => {
+Meteor.call("aggregations.getUserStatistics", (error, result) => {
   // result = {
   //   totalTasksAssigned: number,
   //   tasksByStatus: { todo, in_progress, review, done },
@@ -205,10 +218,11 @@ Meteor.call('aggregations.getUserStatistics', (error, result) => {
 ---
 
 #### `aggregations.getProjectStatistics`
+
 Get statistics for a project.
 
 ```typescript
-Meteor.call('aggregations.getProjectStatistics', projectId, (error, result) => {
+Meteor.call("aggregations.getProjectStatistics", projectId, (error, result) => {
   // result = {
   //   totalTasks: number,
   //   tasksByStatus: {...},
@@ -226,6 +240,7 @@ Meteor.call('aggregations.getProjectStatistics', projectId, (error, result) => {
 ---
 
 #### `aggregations.getTeamPerformance`
+
 Get team performance metrics.
 
 ```typescript
@@ -241,6 +256,7 @@ Meteor.call('aggregations.getTeamPerformance', projectId?, (error, result) => {
 ```
 
 **Parameters:**
+
 - `projectId` (string, optional): Limit to specific project
 
 **Requires:** Login, Manager or Admin role
@@ -248,22 +264,27 @@ Meteor.call('aggregations.getTeamPerformance', projectId?, (error, result) => {
 ---
 
 #### `aggregations.getActivityTimeline`
+
 Get activity timeline.
 
 ```typescript
-Meteor.call('aggregations.getActivityTimeline', {
-  userId?: string,
-  entityId?: string,
-  days?: number
-}, (error, result) => {
-  // result = [
-  //   {
-  //     date: 'YYYY-MM-DD',
-  //     actions: { create, update, delete, complete, assign }
-  //   },
-  //   ...
-  // ]
-});
+Meteor.call(
+  "aggregations.getActivityTimeline",
+  {
+    userId: string,
+    entityId: string,
+    days: number,
+  },
+  (error, result) => {
+    // result = [
+    //   {
+    //     date: 'YYYY-MM-DD',
+    //     actions: { create, update, delete, complete, assign }
+    //   },
+    //   ...
+    // ]
+  }
+);
 ```
 
 **Requires:** Login
@@ -271,10 +292,11 @@ Meteor.call('aggregations.getActivityTimeline', {
 ---
 
 #### `aggregations.getPriorityDistribution`
+
 Get task priority distribution.
 
 ```typescript
-Meteor.call('aggregations.getPriorityDistribution', (error, result) => {
+Meteor.call("aggregations.getPriorityDistribution", (error, result) => {
   // result = {
   //   high: { todo, in_progress, review },
   //   medium: { todo, in_progress, review },
@@ -294,30 +316,33 @@ Publications provide real-time reactive data via DDP.
 ### User Publications
 
 #### `users.current`
+
 Current user's profile.
 
 ```typescript
-Meteor.subscribe('users.current');
+Meteor.subscribe("users.current");
 // Returns: Current user's data (no password/services)
 ```
 
 ---
 
 #### `users.projectTeam`
+
 Team members for a project.
 
 ```typescript
-Meteor.subscribe('users.projectTeam', projectId);
+Meteor.subscribe("users.projectTeam", projectId);
 // Returns: Users on the project team
 ```
 
 ---
 
 #### `users.list`
+
 List of all users (for assignment dropdowns).
 
 ```typescript
-Meteor.subscribe('users.list');
+Meteor.subscribe("users.list");
 // Returns: All users (limited fields)
 // Requires: Manager or Admin role
 ```
@@ -327,40 +352,44 @@ Meteor.subscribe('users.list');
 ### Project Publications
 
 #### `projects.owned`
+
 Projects owned by current user.
 
 ```typescript
-Meteor.subscribe('projects.owned');
+Meteor.subscribe("projects.owned");
 // Returns: Projects where user is owner
 ```
 
 ---
 
 #### `projects.memberOf`
+
 Projects where user is a team member.
 
 ```typescript
-Meteor.subscribe('projects.memberOf');
+Meteor.subscribe("projects.memberOf");
 // Returns: Projects where user is in team
 ```
 
 ---
 
 #### `projects.single`
+
 Single project by ID.
 
 ```typescript
-Meteor.subscribe('projects.single', projectId);
+Meteor.subscribe("projects.single", projectId);
 // Returns: One project (if user has access)
 ```
 
 ---
 
 #### `projects.all`
+
 All active projects (admin only).
 
 ```typescript
-Meteor.subscribe('projects.all');
+Meteor.subscribe("projects.all");
 // Returns: All active projects
 // Requires: Admin role
 ```
@@ -368,10 +397,11 @@ Meteor.subscribe('projects.all');
 ---
 
 #### `projects.withTasks`
+
 Project with its tasks (composite).
 
 ```typescript
-Meteor.subscribe('projects.withTasks', projectId);
+Meteor.subscribe("projects.withTasks", projectId);
 // Returns: Project + all its tasks
 ```
 
@@ -380,60 +410,66 @@ Meteor.subscribe('projects.withTasks', projectId);
 ### Task Publications
 
 #### `tasks.byProject`
+
 Tasks for a specific project.
 
 ```typescript
-Meteor.subscribe('tasks.byProject', projectId);
+Meteor.subscribe("tasks.byProject", projectId);
 // Returns: All tasks in project
 ```
 
 ---
 
 #### `tasks.assignedToMe`
+
 Active tasks assigned to current user.
 
 ```typescript
-Meteor.subscribe('tasks.assignedToMe');
+Meteor.subscribe("tasks.assignedToMe");
 // Returns: User's tasks (excluding done)
 ```
 
 ---
 
 #### `tasks.assignedToMeAll`
+
 All tasks assigned to current user.
 
 ```typescript
-Meteor.subscribe('tasks.assignedToMeAll');
+Meteor.subscribe("tasks.assignedToMeAll");
 // Returns: User's tasks (including done)
 ```
 
 ---
 
 #### `tasks.createdByMe`
+
 Tasks created by current user.
 
 ```typescript
-Meteor.subscribe('tasks.createdByMe');
+Meteor.subscribe("tasks.createdByMe");
 // Returns: Tasks where user is creator
 ```
 
 ---
 
 #### `tasks.single`
+
 Single task by ID.
 
 ```typescript
-Meteor.subscribe('tasks.single', taskId);
+Meteor.subscribe("tasks.single", taskId);
 // Returns: One task (if user has access)
 ```
 
 ---
 
 #### `tasks.myOverdue`
+
 Current user's overdue tasks.
 
 ```typescript
-Meteor.subscribe('tasks.myOverdue');
+Meteor.subscribe("tasks.myOverdue");
 // Returns: User's tasks that are past due
 ```
 
@@ -442,6 +478,7 @@ Meteor.subscribe('tasks.myOverdue');
 ### Activity Log Publications
 
 #### `activityLogs.mine`
+
 Current user's activity.
 
 ```typescript
@@ -453,6 +490,7 @@ Meteor.subscribe('activityLogs.mine', limit?);
 ---
 
 #### `activityLogs.forProject`
+
 Activity for a project.
 
 ```typescript
@@ -464,16 +502,18 @@ Meteor.subscribe('activityLogs.forProject', projectId, limit?);
 ---
 
 #### `activityLogs.forTask`
+
 Activity for a task.
 
 ```typescript
-Meteor.subscribe('activityLogs.forTask', taskId);
+Meteor.subscribe("activityLogs.forTask", taskId);
 // Returns: Task activity history
 ```
 
 ---
 
 #### `activityLogs.dashboard`
+
 Recent activity across all accessible projects.
 
 ```typescript
@@ -489,35 +529,39 @@ Meteor.subscribe('activityLogs.dashboard', limit?);
 ### React Component Example
 
 ```tsx
-import { useTracker } from 'meteor/react-meteor-data';
-import { ProjectsCollection, TasksCollection } from '/imports/api/collections';
+import { useTracker } from "meteor/react-meteor-data";
+import { ProjectsCollection, TasksCollection } from "/imports/api/collections";
 
 function MyProjects() {
   const { projects, loading } = useTracker(() => {
-    const handle = Meteor.subscribe('projects.owned');
+    const handle = Meteor.subscribe("projects.owned");
 
     return {
       projects: handle.ready()
         ? ProjectsCollection.find({}, { sort: { createdAt: -1 } }).fetch()
         : [],
-      loading: !handle.ready()
+      loading: !handle.ready(),
     };
   }, []);
 
   const handleCreateProject = () => {
-    Meteor.call('projects.insert', {
-      name: 'New Project',
-      description: 'Description',
-      teamMemberIds: [],
-      status: 'active',
-      tags: []
-    }, (error, projectId) => {
-      if (error) {
-        alert(error.message);
-      } else {
-        console.log('Created project:', projectId);
+    Meteor.call(
+      "projects.insert",
+      {
+        name: "New Project",
+        description: "Description",
+        teamMemberIds: [],
+        status: "active",
+        tags: [],
+      },
+      (error, projectId) => {
+        if (error) {
+          alert(error.message);
+        } else {
+          console.log("Created project:", projectId);
+        }
       }
-    });
+    );
   };
 
   if (loading) return <div>Loading...</div>;
@@ -526,7 +570,7 @@ function MyProjects() {
     <div>
       <button onClick={handleCreateProject}>Create Project</button>
       <ul>
-        {projects.map(project => (
+        {projects.map((project) => (
           <li key={project._id}>{project.name}</li>
         ))}
       </ul>
@@ -539,14 +583,14 @@ function MyProjects() {
 
 ## 🔐 Permission Summary
 
-| Method/Publication | Anyone | Member | Manager | Admin |
-|-------------------|--------|--------|---------|-------|
-| projects.insert | ❌ | ❌ | ✅ | ✅ |
-| projects.update | ❌ | ❌ | ✅ (own) | ✅ |
-| tasks.insert | ❌ | ✅ (team) | ✅ | ✅ |
-| tasks.update | ❌ | ✅ (limited) | ✅ | ✅ |
-| users.list | ❌ | ❌ | ✅ | ✅ |
-| projects.all | ❌ | ❌ | ❌ | ✅ |
+| Method/Publication | Anyone | Member       | Manager  | Admin |
+| ------------------ | ------ | ------------ | -------- | ----- |
+| projects.insert    | ❌     | ❌           | ✅       | ✅    |
+| projects.update    | ❌     | ❌           | ✅ (own) | ✅    |
+| tasks.insert       | ❌     | ✅ (team)    | ✅       | ✅    |
+| tasks.update       | ❌     | ✅ (limited) | ✅       | ✅    |
+| users.list         | ❌     | ❌           | ✅       | ✅    |
+| projects.all       | ❌     | ❌           | ❌       | ✅    |
 
 ---
 
@@ -556,24 +600,29 @@ function MyProjects() {
 
 ```typescript
 // 1. Create project
-Meteor.call('projects.insert', projectData, (err, projectId) => {
+Meteor.call("projects.insert", projectData, (err, projectId) => {
   if (err) return;
 
   // 2. Create tasks for the project
-  const taskPromises = tasksData.map(taskData =>
-    new Promise((resolve, reject) => {
-      Meteor.call('tasks.insert', {
-        ...taskData,
-        projectId
-      }, (err, taskId) => {
-        if (err) reject(err);
-        else resolve(taskId);
-      });
-    })
+  const taskPromises = tasksData.map(
+    (taskData) =>
+      new Promise((resolve, reject) => {
+        Meteor.call(
+          "tasks.insert",
+          {
+            ...taskData,
+            projectId,
+          },
+          (err, taskId) => {
+            if (err) reject(err);
+            else resolve(taskId);
+          }
+        );
+      })
   );
 
   Promise.all(taskPromises).then(() => {
-    console.log('Project and tasks created!');
+    console.log("Project and tasks created!");
   });
 });
 ```
@@ -582,22 +631,22 @@ Meteor.call('projects.insert', projectData, (err, projectId) => {
 
 ```typescript
 const { projects, tasks, stats, loading } = useTracker(() => {
-  const h1 = Meteor.subscribe('projects.owned');
-  const h2 = Meteor.subscribe('tasks.assignedToMe');
+  const h1 = Meteor.subscribe("projects.owned");
+  const h2 = Meteor.subscribe("tasks.assignedToMe");
 
   const ready = h1.ready() && h2.ready();
 
   return {
     projects: ready ? ProjectsCollection.find({}).fetch() : [],
     tasks: ready ? TasksCollection.find({}).fetch() : [],
-    loading: !ready
+    loading: !ready,
   };
 }, []);
 
 // Call aggregation separately (not reactive)
 useEffect(() => {
   if (!loading) {
-    Meteor.call('aggregations.getUserStatistics', (err, result) => {
+    Meteor.call("aggregations.getUserStatistics", (err, result) => {
       setStats(result);
     });
   }
@@ -607,6 +656,7 @@ useEffect(() => {
 ---
 
 **Need more details?** Check the implementation files:
+
 - Methods: `/imports/api/methods/`
 - Publications: `/imports/api/publications/publications.ts`
 - Types: `/imports/api/collections/types.ts`

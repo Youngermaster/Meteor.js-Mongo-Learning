@@ -107,6 +107,7 @@ docker-compose ps
 ```
 
 You should see:
+
 - **MongoDB**: Running on `localhost:27017`
 - **Mongo Express**: Web UI at `http://localhost:8081`
   - Username: `admin`
@@ -132,6 +133,7 @@ MONGO_URL=mongodb://admin:admin123@localhost:27017/meteor-learning?authSource=ad
 ```
 
 The app will:
+
 1. Connect to MongoDB
 2. Create indexes
 3. Seed the database with sample data
@@ -141,14 +143,14 @@ The app will:
 
 The seed data creates these users:
 
-| Username | Password | Role |
-|----------|----------|------|
-| `admin` | `admin123` | Admin (full access) |
+| Username   | Password     | Role                          |
+| ---------- | ------------ | ----------------------------- |
+| `admin`    | `admin123`   | Admin (full access)           |
 | `manager1` | `manager123` | Manager (can create projects) |
-| `manager2` | `manager123` | Manager |
-| `member1` | `member123` | Member (can work on tasks) |
-| `member2` | `member123` | Member |
-| `member3` | `member123` | Member |
+| `manager2` | `manager123` | Manager                       |
+| `member1`  | `member123`  | Member (can work on tasks)    |
+| `member2`  | `member123`  | Member                        |
+| `member3`  | `member123`  | Member                        |
 
 ---
 
@@ -157,6 +159,7 @@ The seed data creates these users:
 ### 1. Start with the Case Study
 
 Read [`CASE_STUDY.md`](./CASE_STUDY.md) to understand:
+
 - System architecture
 - Collection relationships
 - Learning objectives
@@ -182,6 +185,7 @@ Read [`CASE_STUDY.md`](./CASE_STUDY.md) to understand:
 **File:** `imports/api/methods/tasks.methods.ts`
 
 Learn about:
+
 - Input validation with `check()`
 - Authorization patterns
 - Business logic enforcement
@@ -193,6 +197,7 @@ Learn about:
 **File:** `imports/api/publications/publications.ts`
 
 Learn when to use DDP:
+
 - Filtering data server-side
 - Field projections for security
 - Pagination strategies
@@ -203,6 +208,7 @@ Learn when to use DDP:
 **File:** `imports/api/aggregations/aggregations.ts`
 
 Learn MongoDB aggregation pipeline:
+
 - `$match`, `$group`, `$project`
 - `$lookup` for joins
 - Complex analytics
@@ -252,25 +258,29 @@ TasksCollection.find({ status: 'todo' }).count();
 
 ```javascript
 // Subscribe to data
-Meteor.subscribe('projects.owned');
+Meteor.subscribe("projects.owned");
 
 // Query local MiniMongo
 ProjectsCollection.find().fetch();
 
 // Call a method
-Meteor.call('tasks.insert', {
-  projectId: 'PROJECT_ID',
-  title: 'New Task',
-  description: 'Test task',
-  priority: 'high',
-  tags: []
-}, (err, taskId) => {
-  console.log('Task created:', taskId);
-});
+Meteor.call(
+  "tasks.insert",
+  {
+    projectId: "PROJECT_ID",
+    title: "New Task",
+    description: "Test task",
+    priority: "high",
+    tags: [],
+  },
+  (err, taskId) => {
+    console.log("Task created:", taskId);
+  }
+);
 
 // Call aggregation
-Meteor.call('aggregations.getProjectStatistics', 'PROJECT_ID', (err, stats) => {
-  console.log('Project stats:', stats);
+Meteor.call("aggregations.getProjectStatistics", "PROJECT_ID", (err, stats) => {
+  console.log("Project stats:", stats);
 });
 ```
 
@@ -318,6 +328,7 @@ db.tasks.getIndexes()
 ### 1. Security
 
 **Password Encryption:**
+
 ```typescript
 // NEVER store plain passwords
 // Meteor's Accounts package uses bcrypt automatically
@@ -329,40 +340,44 @@ Accounts.createUser({
 ```
 
 **Input Validation:**
+
 ```typescript
 Meteor.methods({
-  'tasks.insert'(taskData) {
+  "tasks.insert"(taskData) {
     // ALWAYS validate inputs
     check(taskData, {
       title: String,
       description: String,
-      priority: Match.OneOf('low', 'medium', 'high')
+      priority: Match.OneOf("low", "medium", "high"),
     });
-  }
+  },
 });
 ```
 
 **Authorization:**
+
 ```typescript
 // ALWAYS check permissions
 if (!canModifyTask(this.userId, task)) {
-  throw new Meteor.Error('not-authorized');
+  throw new Meteor.Error("not-authorized");
 }
 ```
 
 ### 2. Performance
 
 **Indexing:**
+
 ```typescript
 // Compound index for common query pattern
 TasksCollection.createIndexAsync({
   projectId: 1,
   status: 1,
-  dueDate: 1
+  dueDate: 1,
 });
 ```
 
 **Field Projections:**
+
 ```typescript
 // Only fetch needed fields
 TasksCollection.find(
@@ -372,6 +387,7 @@ TasksCollection.find(
 ```
 
 **Pagination:**
+
 ```typescript
 const limit = 20;
 const skip = (page - 1) * limit;
@@ -381,6 +397,7 @@ TasksCollection.find({}, { limit, skip });
 ### 3. Data Patterns
 
 **Denormalization:**
+
 ```typescript
 // Project stores task counts for fast dashboard queries
 metadata: {
@@ -390,6 +407,7 @@ metadata: {
 ```
 
 **References vs Embedding:**
+
 ```typescript
 // Use references for:
 // - Large data
@@ -422,18 +440,18 @@ metadata: { priority: 'high', ... }
 ```typescript
 // In imports/api/methods/yourCollection.methods.ts
 Meteor.methods({
-  'yourCollection.yourAction'(params) {
+  "yourCollection.yourAction"(params) {
     check(params, Object);
 
     if (!this.userId) {
-      throw new Meteor.Error('not-authorized');
+      throw new Meteor.Error("not-authorized");
     }
 
     // Validate, check permissions, perform action
     // ...
 
     return result;
-  }
+  },
 });
 ```
 
@@ -442,16 +460,20 @@ Meteor.methods({
 ```typescript
 // In imports/api/publications/publications.ts
 if (Meteor.isServer) {
-  Meteor.publish('yourPublication', function(params) {
+  Meteor.publish("yourPublication", function (params) {
     check(params, String);
 
     if (!this.userId) return this.ready();
 
     return YourCollection.find(
-      { /* filter */ },
       {
-        fields: { /* projection */ },
-        limit: 50
+        /* filter */
+      },
+      {
+        fields: {
+          /* projection */
+        },
+        limit: 50,
       }
     );
   });
@@ -496,14 +518,17 @@ meteor update
 ### Common Errors
 
 **"MongoError: Authentication failed"**
+
 - Check MONGO_URL in .env
 - Verify MongoDB credentials in docker-compose.yml
 
 **"Error: Match error: Expected string, got undefined"**
+
 - You're missing required parameters in a method call
 - Check the method signature
 
 **"Error: not-authorized"**
+
 - You're not logged in, or don't have permission
 - Check user role and ownership
 
@@ -512,16 +537,19 @@ meteor update
 ## 📚 Additional Resources
 
 ### Meteor Documentation
+
 - [Meteor Guide](https://guide.meteor.com/) - Best practices
 - [Meteor Docs](https://docs.meteor.com/) - API reference
 - [Meteor Forums](https://forums.meteor.com/) - Community help
 
 ### MongoDB Resources
+
 - [MongoDB Manual](https://docs.mongodb.com/manual/)
 - [Aggregation Pipeline](https://docs.mongodb.com/manual/core/aggregation-pipeline/)
 - [Indexing Strategies](https://docs.mongodb.com/manual/indexes/)
 
 ### TypeScript
+
 - [TypeScript Handbook](https://www.typescriptlang.org/docs/)
 - [Meteor TypeScript Guide](https://guide.meteor.com/build-tool.html#typescript)
 
@@ -572,6 +600,7 @@ MIT License - Feel free to use this project for learning!
 ## 🙏 Acknowledgments
 
 Built with:
+
 - [Meteor.js](https://www.meteor.com/)
 - [MongoDB](https://www.mongodb.com/)
 - [TypeScript](https://www.typescriptlang.org/)

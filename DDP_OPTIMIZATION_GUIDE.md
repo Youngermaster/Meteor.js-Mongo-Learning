@@ -16,12 +16,14 @@
 ### ✅ Use DDP (Publications/Subscriptions) When:
 
 1. **Real-time collaboration**
+
    - Multiple users editing same data
    - Live dashboards
    - Chat/messaging
    - Notifications
 
 2. **Small, frequently changing datasets**
+
    - Current user's active tasks
    - Project team members
    - Live status indicators
@@ -34,16 +36,19 @@
 ### ❌ Use Methods Instead When:
 
 1. **One-time data fetches**
+
    - Report generation
    - Historical data
    - Export/download
 
 2. **Large datasets**
+
    - Complete user list (hundreds/thousands)
    - Full transaction history
    - Archive data
 
 3. **Computed/aggregated data**
+
    - Analytics dashboards
    - Statistics
    - Complex joins
@@ -60,7 +65,7 @@
 
 ```typescript
 // BAD: Sends ALL tasks to EVERY client
-Meteor.publish('allTasks', function() {
+Meteor.publish("allTasks", function () {
   return TasksCollection.find({});
 });
 ```
@@ -68,6 +73,7 @@ Meteor.publish('allTasks', function() {
 **Problem:** If you have 10,000 tasks, every connected client gets 10,000 documents!
 
 **Impact:**
+
 - High memory usage on client
 - Slow initial load
 - Unnecessary data transfer
@@ -77,17 +83,17 @@ Meteor.publish('allTasks', function() {
 
 ```typescript
 // GOOD: Only send user's active tasks
-Meteor.publish('myActiveTasks', function() {
+Meteor.publish("myActiveTasks", function () {
   if (!this.userId) return this.ready();
 
   return TasksCollection.find(
     {
       assignedToId: this.userId,
-      status: { $ne: 'done' }  // Exclude completed
+      status: { $ne: "done" }, // Exclude completed
     },
     {
-      limit: 50,  // Safety limit
-      sort: { dueDate: 1 }
+      limit: 50, // Safety limit
+      sort: { dueDate: 1 },
     }
   );
 });
@@ -99,12 +105,13 @@ Meteor.publish('myActiveTasks', function() {
 
 ```typescript
 // BAD: Sends all fields (including large/sensitive ones)
-Meteor.publish('users', function() {
+Meteor.publish("users", function () {
   return Meteor.users.find({});
 });
 ```
 
 **Problem:**
+
 - Sends password hashes (security risk!)
 - Sends unnecessary data (bloated payloads)
 - Wastes bandwidth
@@ -113,18 +120,18 @@ Meteor.publish('users', function() {
 
 ```typescript
 // GOOD: Only send public profile data
-Meteor.publish('users.public', function() {
+Meteor.publish("users.public", function () {
   return Meteor.users.find(
     {},
     {
       fields: {
         username: 1,
-        'profile.firstName': 1,
-        'profile.lastName': 1,
-        'profile.avatar': 1,
+        "profile.firstName": 1,
+        "profile.lastName": 1,
+        "profile.avatar": 1,
         // Everything else excluded (including services with passwords)
       },
-      limit: 100
+      limit: 100,
     }
   );
 });
@@ -137,13 +144,14 @@ Meteor.publish('users.public', function() {
 ```typescript
 // BAD: Component subscribes on every render
 function TaskList() {
-  TasksCollection.find({}).fetch();  // Missing subscription!
+  TasksCollection.find({}).fetch(); // Missing subscription!
   // or
-  Meteor.subscribe('allTasks');  // No cleanup!
+  Meteor.subscribe("allTasks"); // No cleanup!
 }
 ```
 
 **Problem:**
+
 - Memory leaks
 - Multiple redundant subscriptions
 - Wasted resources
@@ -152,22 +160,26 @@ function TaskList() {
 
 ```typescript
 // GOOD: Use useTracker hook (React)
-import { useTracker } from 'meteor/react-meteor-data';
+import { useTracker } from "meteor/react-meteor-data";
 
 function TaskList() {
   const { tasks, loading } = useTracker(() => {
-    const handle = Meteor.subscribe('myActiveTasks');
+    const handle = Meteor.subscribe("myActiveTasks");
 
     return {
-      tasks: handle.ready()
-        ? TasksCollection.find({}).fetch()
-        : [],
-      loading: !handle.ready()
+      tasks: handle.ready() ? TasksCollection.find({}).fetch() : [],
+      loading: !handle.ready(),
     };
   }, []); // Empty deps = subscribe once on mount, cleanup on unmount
 
   if (loading) return <div>Loading...</div>;
-  return <ul>{tasks.map(t => <li key={t._id}>{t.title}</li>)}</ul>;
+  return (
+    <ul>
+      {tasks.map((t) => (
+        <li key={t._id}>{t.title}</li>
+      ))}
+    </ul>
+  );
 }
 ```
 
@@ -177,9 +189,9 @@ function TaskList() {
 
 ```typescript
 // BAD: N+1 problem - separate publications for each entity
-Meteor.subscribe('project', projectId);
-Meteor.subscribe('tasks', projectId);
-Meteor.subscribe('users', projectId);
+Meteor.subscribe("project", projectId);
+Meteor.subscribe("tasks", projectId);
+Meteor.subscribe("users", projectId);
 // Each requires separate DDP messages
 ```
 
@@ -187,7 +199,7 @@ Meteor.subscribe('users', projectId);
 
 ```typescript
 // GOOD: Single publication with all related data
-Meteor.publish('project.detail', function(projectId) {
+Meteor.publish("project.detail", function (projectId) {
   check(projectId, String);
 
   if (!this.userId) return this.ready();
@@ -203,13 +215,13 @@ Meteor.publish('project.detail', function(projectId) {
     TasksCollection.find({ projectId }, { limit: 200 }),
     Meteor.users.find(
       { _id: { $in: [project.ownerId, ...project.teamMemberIds] } },
-      { fields: { username: 1, 'profile.firstName': 1, 'profile.lastName': 1 } }
-    )
+      { fields: { username: 1, "profile.firstName": 1, "profile.lastName": 1 } }
+    ),
   ];
 });
 
 // Client: Single subscription
-Meteor.subscribe('project.detail', projectId);
+Meteor.subscribe("project.detail", projectId);
 ```
 
 ---
@@ -220,7 +232,7 @@ Meteor.subscribe('project.detail', projectId);
 
 ```typescript
 // Server
-Meteor.publish('tasks.paginated', function(page = 1, pageSize = 20) {
+Meteor.publish("tasks.paginated", function (page = 1, pageSize = 20) {
   check(page, Number);
   check(pageSize, Number);
 
@@ -232,7 +244,7 @@ Meteor.publish('tasks.paginated', function(page = 1, pageSize = 20) {
     {
       skip,
       limit,
-      sort: { createdAt: -1 }
+      sort: { createdAt: -1 },
     }
   );
 });
@@ -240,9 +252,9 @@ Meteor.publish('tasks.paginated', function(page = 1, pageSize = 20) {
 // Client
 const [page, setPage] = useState(1);
 const { tasks } = useTracker(() => {
-  const handle = Meteor.subscribe('tasks.paginated', page, 20);
+  const handle = Meteor.subscribe("tasks.paginated", page, 20);
   return {
-    tasks: handle.ready() ? TasksCollection.find({}).fetch() : []
+    tasks: handle.ready() ? TasksCollection.find({}).fetch() : [],
   };
 }, [page]);
 ```
@@ -251,7 +263,7 @@ const { tasks } = useTracker(() => {
 
 ```typescript
 // Server: Multiple focused publications
-Meteor.publish('tasks.byStatus', function(status: TaskStatus) {
+Meteor.publish("tasks.byStatus", function (status: TaskStatus) {
   check(status, String);
 
   return TasksCollection.find(
@@ -260,12 +272,12 @@ Meteor.publish('tasks.byStatus', function(status: TaskStatus) {
   );
 });
 
-Meteor.publish('tasks.highPriority', function() {
+Meteor.publish("tasks.highPriority", function () {
   return TasksCollection.find(
     {
       assignedToId: this.userId,
-      priority: 'high',
-      status: { $ne: 'done' }
+      priority: "high",
+      status: { $ne: "done" },
     },
     { limit: 20 }
   );
@@ -273,8 +285,8 @@ Meteor.publish('tasks.highPriority', function() {
 
 // Client: Subscribe to what you need
 const { tasks } = useTracker(() => {
-  const handle = Meteor.subscribe('tasks.byStatus', 'in_progress');
-  return { tasks: TasksCollection.find({ status: 'in_progress' }).fetch() };
+  const handle = Meteor.subscribe("tasks.byStatus", "in_progress");
+  return { tasks: TasksCollection.find({ status: "in_progress" }).fetch() };
 }, []);
 ```
 
@@ -282,7 +294,7 @@ const { tasks } = useTracker(() => {
 
 ```typescript
 // Server: Publish count without all documents
-Meteor.publish('tasks.counts', function() {
+Meteor.publish("tasks.counts", function () {
   if (!this.userId) return this.ready();
 
   let initializing = true;
@@ -290,16 +302,28 @@ Meteor.publish('tasks.counts', function() {
   // Function to count and publish
   const publishCounts = () => {
     const counts = {
-      todo: TasksCollection.find({ assignedToId: this.userId, status: 'todo' }).count(),
-      inProgress: TasksCollection.find({ assignedToId: this.userId, status: 'in_progress' }).count(),
-      review: TasksCollection.find({ assignedToId: this.userId, status: 'review' }).count(),
-      done: TasksCollection.find({ assignedToId: this.userId, status: 'done' }).count(),
+      todo: TasksCollection.find({
+        assignedToId: this.userId,
+        status: "todo",
+      }).count(),
+      inProgress: TasksCollection.find({
+        assignedToId: this.userId,
+        status: "in_progress",
+      }).count(),
+      review: TasksCollection.find({
+        assignedToId: this.userId,
+        status: "review",
+      }).count(),
+      done: TasksCollection.find({
+        assignedToId: this.userId,
+        status: "done",
+      }).count(),
     };
 
     if (!initializing) {
-      this.changed('taskCounts', this.userId, counts);
+      this.changed("taskCounts", this.userId, counts);
     } else {
-      this.added('taskCounts', this.userId, counts);
+      this.added("taskCounts", this.userId, counts);
       initializing = false;
     }
   };
@@ -323,7 +347,7 @@ Meteor.publish('tasks.counts', function() {
 
 // Client
 const { counts } = useTracker(() => {
-  Meteor.subscribe('tasks.counts');
+  Meteor.subscribe("tasks.counts");
   const doc = TaskCounts.findOne(Meteor.userId());
   return { counts: doc || { todo: 0, inProgress: 0, review: 0, done: 0 } };
 }, []);
@@ -336,8 +360,8 @@ const { counts } = useTracker(() => {
 ### React Hook Pattern
 
 ```typescript
-import { useTracker } from 'meteor/react-meteor-data';
-import { useEffect } from 'react';
+import { useTracker } from "meteor/react-meteor-data";
+import { useEffect } from "react";
 
 // Custom hook for subscription
 function useSubscription(publicationName: string, ...args: any[]) {
@@ -353,11 +377,14 @@ function useSubscription(publicationName: string, ...args: any[]) {
 
 // Usage
 function MyComponent({ projectId }) {
-  useSubscription('project.detail', projectId);
+  useSubscription("project.detail", projectId);
 
-  const { project } = useTracker(() => ({
-    project: ProjectsCollection.findOne(projectId)
-  }), [projectId]);
+  const { project } = useTracker(
+    () => ({
+      project: ProjectsCollection.findOne(projectId),
+    }),
+    [projectId]
+  );
 
   return <div>{project?.name}</div>;
 }
@@ -371,11 +398,11 @@ function MyComponent({ projectId }) {
 
 ```typescript
 // In browser console:
-Meteor.connection._stream.socket.addEventListener('message', (event) => {
+Meteor.connection._stream.socket.addEventListener("message", (event) => {
   const data = JSON.parse(event.data);
-  if (data.msg === 'added' || data.msg === 'changed') {
-    console.log('DDP message size:', event.data.length, 'bytes');
-    console.log('Collection:', data.collection);
+  if (data.msg === "added" || data.msg === "changed") {
+    console.log("DDP message size:", event.data.length, "bytes");
+    console.log("Collection:", data.collection);
   }
 });
 ```
@@ -384,7 +411,7 @@ Meteor.connection._stream.socket.addEventListener('message', (event) => {
 
 ```typescript
 // Server-side (add to server/main.ts)
-Meteor.publish(null, function() {
+Meteor.publish(null, function () {
   if (this.userId) {
     console.log(`User ${this.userId} connected`);
   }
@@ -416,17 +443,14 @@ Meteor.publish(null, function() {
 
 ```typescript
 // Server: Efficient dashboard publication
-Meteor.publish('dashboard.data', function() {
+Meteor.publish("dashboard.data", function () {
   if (!this.userId) return this.ready();
 
   // Get user's projects (limited)
   const projects = ProjectsCollection.find(
     {
-      $or: [
-        { ownerId: this.userId },
-        { teamMemberIds: this.userId }
-      ],
-      status: 'active'
+      $or: [{ ownerId: this.userId }, { teamMemberIds: this.userId }],
+      status: "active",
     },
     {
       limit: 10,
@@ -434,9 +458,9 @@ Meteor.publish('dashboard.data', function() {
       fields: {
         name: 1,
         status: 1,
-        'metadata.totalTasks': 1,
-        'metadata.completedTasks': 1
-      }
+        "metadata.totalTasks": 1,
+        "metadata.completedTasks": 1,
+      },
     }
   );
 
@@ -444,7 +468,7 @@ Meteor.publish('dashboard.data', function() {
   const tasks = TasksCollection.find(
     {
       assignedToId: this.userId,
-      status: { $ne: 'done' }
+      status: { $ne: "done" },
     },
     {
       limit: 20,
@@ -454,8 +478,8 @@ Meteor.publish('dashboard.data', function() {
         status: 1,
         priority: 1,
         dueDate: 1,
-        projectId: 1
-      }
+        projectId: 1,
+      },
     }
   );
 
@@ -464,12 +488,12 @@ Meteor.publish('dashboard.data', function() {
 
 // Client: Single subscription for entire dashboard
 const { projects, tasks, loading } = useTracker(() => {
-  const handle = Meteor.subscribe('dashboard.data');
+  const handle = Meteor.subscribe("dashboard.data");
 
   return {
     projects: handle.ready() ? ProjectsCollection.find({}).fetch() : [],
     tasks: handle.ready() ? TasksCollection.find({}).fetch() : [],
-    loading: !handle.ready()
+    loading: !handle.ready(),
   };
 }, []);
 ```
