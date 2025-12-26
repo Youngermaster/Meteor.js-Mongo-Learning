@@ -13,7 +13,7 @@
 
 ## When to Use DDP vs Methods
 
-### ✅ Use DDP (Publications/Subscriptions) When:
+### Use DDP (Publications/Subscriptions) When:
 
 1. **Real-time collaboration**
 
@@ -33,7 +33,7 @@
    - Form auto-save
    - Live search results
 
-### ❌ Use Methods Instead When:
+### Use Methods Instead When:
 
 1. **One-time data fetches**
 
@@ -61,7 +61,7 @@
 
 ## DDP Performance Anti-Patterns
 
-### ❌ ANTI-PATTERN 1: Publishing Entire Collections
+### ANTI-PATTERN 1: Publishing Entire Collections
 
 ```typescript
 // BAD: Sends ALL tasks to EVERY client
@@ -79,7 +79,7 @@ Meteor.publish("allTasks", function () {
 - Unnecessary data transfer
 - Privacy/security risk
 
-### ✅ SOLUTION: Filter and Limit
+### SOLUTION: Filter and Limit
 
 ```typescript
 // GOOD: Only send user's active tasks
@@ -101,7 +101,7 @@ Meteor.publish("myActiveTasks", function () {
 
 ---
 
-### ❌ ANTI-PATTERN 2: No Field Projections
+### ANTI-PATTERN 2: No Field Projections
 
 ```typescript
 // BAD: Sends all fields (including large/sensitive ones)
@@ -116,7 +116,7 @@ Meteor.publish("users", function () {
 - Sends unnecessary data (bloated payloads)
 - Wastes bandwidth
 
-### ✅ SOLUTION: Project Only Needed Fields
+### SOLUTION: Project Only Needed Fields
 
 ```typescript
 // GOOD: Only send public profile data
@@ -139,7 +139,7 @@ Meteor.publish("users.public", function () {
 
 ---
 
-### ❌ ANTI-PATTERN 3: Over-Subscribing
+### ANTI-PATTERN 3: Over-Subscribing
 
 ```typescript
 // BAD: Component subscribes on every render
@@ -156,7 +156,7 @@ function TaskList() {
 - Multiple redundant subscriptions
 - Wasted resources
 
-### ✅ SOLUTION: Proper Subscription Management
+### SOLUTION: Proper Subscription Management
 
 ```typescript
 // GOOD: Use useTracker hook (React)
@@ -185,7 +185,7 @@ function TaskList() {
 
 ---
 
-### ❌ ANTI-PATTERN 4: Publishing Related Data Inefficiently
+### ANTI-PATTERN 4: Publishing Related Data Inefficiently
 
 ```typescript
 // BAD: N+1 problem - separate publications for each entity
@@ -195,7 +195,7 @@ Meteor.subscribe("users", projectId);
 // Each requires separate DDP messages
 ```
 
-### ✅ SOLUTION: Composite Publication
+### SOLUTION: Composite Publication
 
 ```typescript
 // GOOD: Single publication with all related data
