@@ -1,1 +1,26 @@
 node_modules/
+
+# Environment files
+.env
+.env.local
+
+# Meteor local build
+.meteor/local
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker volumes
+docker/data/
+
+# Logs
+*.log
+npm-debug.log*
